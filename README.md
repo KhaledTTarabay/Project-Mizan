@@ -6,6 +6,7 @@ Growing up in Lebanon, I watched misinformation move faster that truth, shaping 
 
 ## Live Demo
 
+[mizan.streamlit.app](https://project-mizan.streamlit.app/)
 
 ## How it works:
 

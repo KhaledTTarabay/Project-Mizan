@@ -1,6 +1,5 @@
 data/raw/
 data/processed/
-model/artifacts/
 tall git-filter-repo
 venv/
 __pycache__/
