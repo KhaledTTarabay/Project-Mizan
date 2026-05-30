@@ -41,3 +41,25 @@ with tab1:
                 st.progress(fill, text=f"Credibility Score: {results['confidence']}%")
 with tab2:
     st.header("Live Headlines")
+
+    if st.button("Fetch Headlines"):
+        from scraper.headlines import get_headlines
+
+        with st.spinner("Fetching headlines..."):
+            headlines = get_headlines()
+
+        for h in headlines:
+            result = predict(h["title"])
+
+            col1, col2 = st.columns([3, 1])
+            with col1:
+                st.markdown(f"**[{h['title']}]({h['language'].upper()})")
+                st.caption(f"{h["source"]} . {h['language'].upper()}")
+            with col2:
+                if result["label"] == "Fake":
+                    st.error(f"{result['certainty']} Fake\n{result["confidence"]}%")
+                else:
+                    st.success(
+                        f"{result['certainty']} Credible\n{result['confidence']}%"
+                    )
+            st.divider()
