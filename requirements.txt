@@ -1,0 +1,8 @@
+streamlit
+scikit-learn
+pandas
+numpy
+langdetect
+beautifulsoup4
+requests
+feedparser
