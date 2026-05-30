@@ -1,4 +1,5 @@
 data/raw/
+data/processed/
 model/artifacts/
 venv/
 __pycache__/
