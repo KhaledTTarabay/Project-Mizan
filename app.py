@@ -22,5 +22,22 @@ with tab1:
             st.subheader(f"{results['certainty']} {results['label']}")
             st.metric(label="Confidence", value=f"{results['confidence']}%")
             st.caption(f"Detected language: {results["language"].upper()}")
+            st.divider()
+            scale_col1, scale_col2, scale_col3 = st.columns(3)
+            with scale_col1:
+                st.error("FAKE")
+            with scale_col2:
+                st.warning("UNCERTAIN")
+            with scale_col3:
+                st.success("CREDIBLE")
+
+            if results["label"] == "Fake":
+                fill = results["confidence"] / 100
+                st.progress(
+                    1 - fill, text=f"Credibility Score: {100 - results['confidence']}%"
+                )
+            else:
+                fill = results["confidence"] / 100
+                st.progress(fill, text=f"Credibility Score: {results['confidence']}%")
 with tab2:
     st.header("Live Headlines")
