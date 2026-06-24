@@ -20,7 +20,7 @@ def predict(text):
     label = torch.argmax(probabilities).item()
     confidence = round(probabilities[label].item() * 100, 1)
 
-    label_map = {0: "Credible", 1: "Fake"}
+    label_map = {0: "Fake", 1: "Credible"}
     return {
         "label": label_map[int(label)],
         "confidence": confidence,
