@@ -1,37 +1,30 @@
-import joblib
-import os
+import torch
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from langdetect import detect
 
-ar_vectorizer = joblib.load("model/artifacts/ar_vectorizer.joblib")
-ar_knn = joblib.load("model/artifacts/ar_knn.joblib")
-
-en_vectorizer = joblib.load("model/artifacts/en_vectorizer.joblib")
-en_knn = joblib.load("model/artifacts/en_knn.joblib")
-
+MODEL_NAME = "KhaledTTarabay/mizan-arabertv2"
+ar_tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
+ar_model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME)
+ar_model.eval()
 
 def predict(text):
     lang = detect(text)
+
     if lang != "ar":
-        lang = "en"
+        return {"label": "Unsupported", "confidence": 0.0, "certainty": "Uncertain", "language": lang}
 
-    if lang == "ar":
-        vectorizer = ar_vectorizer
-        knn = ar_knn
-    else:
-        vectorizer = en_vectorizer
-        knn = en_knn
+    inputs = ar_tokenizer(text, return_tensors="pt", truncation=True, max_length=128)
+    with torch.no_grad():
+        outputs = ar_model(**inputs)
+    probabilities = torch.softmax(outputs.logits, dim=1)[0]
+    label = torch.argmax(probabilities).item()
+    confidence = round(probabilities[label].item() * 100, 1)
 
-    vec = vectorizer.transform([text])
-    probabilities = knn.predict_proba(vec)[0]
-    label = knn.predict(vec)[0]
-    confidence = round(probabilities[label] * 100, 1)
-
-    distances, indices = knn.kneighbors(vec, n_neighbors=3)
     label_map = {0: "Credible", 1: "Fake"}
     return {
         "label": label_map[int(label)],
-        "confidence": float(round(probabilities[label] * 100, 1)),
-        "certainty": get_certainty(float(round(probabilities[label] * 100, 1))),
+        "confidence": confidence,
+        "certainty": get_certainty(confidence),
         "language": lang,
     }
 
@@ -45,8 +38,3 @@ def get_certainty(confidence):
         return "Likely"
     else:
         return "Uncertain"
-
-
-if __name__ == "__main__":
-    test = "Netanyahu Gets Re-elected"
-    print(predict(test))

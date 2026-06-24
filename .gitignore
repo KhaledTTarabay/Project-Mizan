@@ -1,7 +1,11 @@
 data/raw/
 data/processed/
+mode;/artifacts
 tall git-filter-repo
 venv/
 __pycache__/
 *.pyc
+*.pyo
 .env
+.DS_Store
+Thumbs.db
